@@ -61,7 +61,7 @@ This examples playbook uses the role twice:
 
 
 
-Optinally you can also configure the currently used account, by setting `name` to `ansible_user_id`:
+Optinally you can also configure the currently used account, by setting `name` to `ansible_user`:
 
 ```yaml
 - hosts: servers
@@ -71,7 +71,7 @@ Optinally you can also configure the currently used account, by setting `name` t
       become: true
       vars:
         user_accounts:
-          - name: "{{ ansible_user_id }}"
+          - name: "{{ ansible_user }}"
             ssh_authorized_keys:
               - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
 ```
@@ -79,7 +79,6 @@ Optinally you can also configure the currently used account, by setting `name` t
 Notes
 ----
 
-- The role should be run with `--become`, but the main playbook should be run _without_ `--become`.
 - On a MacOS control machine you need to `pip install password_hash` for the password hashing to work.
 
 
