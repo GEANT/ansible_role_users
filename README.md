@@ -1,7 +1,12 @@
 Ansible role to configure multiple users accounts.
 
-This takes into account all the user options that ansible supports, minus the SSH generation ones.
-Instead, the account can have SSH related options, see below playbook.
+This takes into account all the user options that ansible supports, minus the SSH related ones.
+Instead, this role adds support for the following options:
+
+- `ssh_private_keys`. A list of dictionaries containing a `dest` key (filename below `~/.ssh`), and a `content` key (key material).
+- `ssh_authorized_keys`. A list of public keys, these are taken to be 'exclusive'.
+- `ssh_config`. An inline snippet of SSH client configuration, saved as `~/.ssh/config`. If you need templating, pick the new option.
+- `ssh_config_template`. Same as the above, but this accepts a file name to a template.
 
 
 Example playbook
@@ -80,7 +85,7 @@ Notes
 ----
 
 - On a MacOS control machine you need to `pip install password_hash` for the password hashing to work.
-
+- Use only one of `ssh_config` and `ssh_config_template`, as they both write to the same file.
 
 
 License
