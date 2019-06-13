@@ -1,0 +1,100 @@
+---
+# Provisioning tasks
+- name: "Ensure group is available for user {{ account.name }}"
+  group:
+    name: "{{ account.group }}"
+    system: "{{ account.system_group | default(false) }}"
+  when: account.group is defined
+
+
+- name: "Ensure account is present for user {{ account.name }}"
+  user:
+    append: "{{ account.append | default(omit) }}"
+    comment: "{{ account.comment | default(omit) }}"
+    create_home: "{{ account.create_home | default(omit) }}"
+    expires: "{{ account.expires | default(omit) }}"
+    force: "{{ account.force | default(omit) }}"
+    group: "{{ account.group | default(omit) }}"
+    groups: "{{ account.groups | default(omit) }}"
+    hidden: "{{ account.hidden | default(omit) }}"
+    home: "{{ account.home | default(omit) }}"
+    local: "{{ account.local | default(omit) }}"
+    login_class: "{{ account.login_class | default(omit) }}"
+    move_home: "{{ account.move_home| default(omit) }}"
+    name: "{{ account.name }}"
+    non_uniqe: "{{ account.non_unique | default(omit) }}"
+    password: "{{ account.password | default(omit) }}"
+    password_lock: "{{ account.password_lock | default(omit) }}"
+    profile: "{{ account.profile | default(omit) }}"
+    remove: "{{ account.remove | default(omit) }}"
+    role: "{{ account.role | default(omit) }}"
+    seuser: "{{ account.seuser | default(omit) }}"
+    shell: "{{ account.shell | default(omit) }}"
+    skeleton: "{{ accont.skeleton | default(omit) }}"
+    state: present
+    system: "{{ account.system_user | default(omit) }}"
+    uid: "{{ account.uid | default(omit) }}"
+    update_password: "{{ account.update_password | default(omit) }}"
+  when: account.name is defined
+  register: current_user
+
+- name: Fetching all group information
+  getent:
+    database: group
+
+- name: "Establishing primary group for user {{ account.name }}"
+  set_fact:
+    current_primary_group: "{{ getent_group | dictsort | selectattr('1.1', 'equalto', current_user.group|string)|first|first }}"
+  
+# SSH related tasks
+- name: "Ensure .ssh directory is available for user {{ account.name }}"
+  file:
+    path: "{{ current_user.home }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ account.name }}"
+    group: "{{ current_primary_group }}"
+  when: account.ssh_authorized_keys is defined or
+    account.ssh_private_keys is defined or
+    account.ssh_config is defined
+
+- name: "Ensure authorized_keys are available for user {{ account.name }}"
+  authorized_key:
+    user: "{{ account.name }}"
+    exclusive: yes
+    key: "{{ account.ssh_authorized_keys | join('\n') }}"
+    manage_dir: no
+  when:
+    - account.ssh_authorized_keys is defined
+    - account.ssh_authorized_keys|length > 0
+
+- name: "Ensure private keys are available for user {{ account.name }}"
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ current_user.home }}/.ssh/{{ item.dest }}"
+    owner: "{{ account.name }}"
+    group: "{{ current_primary_group }}"
+    mode: "{{ current_user.mode | default('0400') }}"
+  no_log: true
+  loop: "{{ account.ssh_private_keys }}"
+  when:
+    - account.ssh_private_keys is defined
+    - account.ssh_private_keys|length > 0
+
+- name: "Ensure ssh client config is available for user {{ account.name }}"
+  copy:
+    content: "{{ account.ssh_config }}"
+    dest: "{{ current_user.home }}/.ssh/config"
+    owner: "{{ account.name }}"
+    group: "{{ current_primary_group }}"
+    mode: '0600'
+  when: account.ssh_config is defined and account.ssh_config_template is not defined
+
+- name: "Ensure ssh client config is available for user {{ account.name }} (from template)"
+  template:
+    src: "{{ account.ssh_config_template }}"
+    dest: "{{ current_user.home }}/.ssh/config"
+    owner: "{{ account.name }}"
+    group: "{{ current_primary_group }}"
+    mode: '0600'
+  when: account.ssh_config_template is defined and account.ssh_config is not defined

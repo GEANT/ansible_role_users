@@ -1,0 +1,8 @@
+---
+- name: "Ensure account is absent for user {{ account.name }}"
+  user:
+    name: "{{ account.name }}"
+    state: absent
+    remove: "{{ account.remove | default(omit) }}"
+    force: "{{ account.force | default(omit) }}"
+  when: account.name is defined
