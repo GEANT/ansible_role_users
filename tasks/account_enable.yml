@@ -88,7 +88,7 @@
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
     mode: '0600'
-  when: account.ssh_config is defined and account.ssh_config_template is not defined
+  when: account.ssh_config is defined
 
 - name: "Ensure ssh client config is available for user {{ account.name }} (from template)"
   template:
@@ -97,4 +97,4 @@
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
     mode: '0600'
-  when: account.ssh_config_template is defined and account.ssh_config is not defined
+  when: account.ssh_config_template is defined
