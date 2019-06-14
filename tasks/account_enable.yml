@@ -30,7 +30,7 @@
     role: "{{ account.role | default(omit) }}"
     seuser: "{{ account.seuser | default(omit) }}"
     shell: "{{ account.shell | default(omit) }}"
-    skeleton: "{{ accont.skeleton | default(omit) }}"
+    skeleton: "{{ account.skeleton | default(omit) }}"
     state: present
     system: "{{ account.system_user | default(omit) }}"
     uid: "{{ account.uid | default(omit) }}"
