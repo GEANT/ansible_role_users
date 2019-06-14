@@ -1,0 +1,7 @@
+# Ansible-lint configuration file
+# See https://github.com/ansible/ansible-lint#configuration-file
+# Can be used to skip specific rules.
+# "ansible-lint -L" will list them all
+skip_list:
+  - '204'
+  - '405'
