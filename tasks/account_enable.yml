@@ -45,7 +45,8 @@
 - name: "Establishing primary group for user {{ account.name }}"
   set_fact:
     current_primary_group: "{{ getent_group | dictsort | selectattr('1.1', 'equalto', current_user.group|string)|first|first }}"
-  
+  when: current_user.group is defined
+
 # SSH related tasks
 - name: "Ensure .ssh directory is available for user {{ account.name }}"
   file:
@@ -54,9 +55,10 @@
     mode: '0700'
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
-  when: account.ssh_authorized_keys is defined or
-    account.ssh_private_keys is defined or
-    account.ssh_config is defined
+  when:
+    - account.ssh_authorized_keys is defined or account.ssh_private_keys is defined or account.ssh_config is defined
+    - current_user.home is defined
+    - current_primary_group is defined
 
 - name: "Ensure authorized_keys are available for user {{ account.name }}"
   authorized_key:
@@ -67,6 +69,7 @@
   when:
     - account.ssh_authorized_keys is defined
     - account.ssh_authorized_keys|length > 0
+    - current_user.home is defined
 
 - name: "Ensure private keys are available for user {{ account.name }}"
   copy:
@@ -80,6 +83,7 @@
   when:
     - account.ssh_private_keys is defined
     - account.ssh_private_keys|length > 0
+    - current_user.home is defined
 
 - name: "Ensure ssh client config is available for user {{ account.name }}"
   copy:
@@ -88,7 +92,9 @@
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
     mode: '0600'
-  when: account.ssh_config is defined
+  when:
+    - account.ssh_config is defined
+    - current_user.home is defined
 
 - name: "Ensure ssh client config is available for user {{ account.name }} (from template)"
   template:
@@ -97,4 +103,6 @@
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
     mode: '0600'
-  when: account.ssh_config_template is defined
+  when:
+    - account.ssh_config_template is defined
+    - current_user.home is defined
