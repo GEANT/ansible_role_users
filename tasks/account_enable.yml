@@ -63,7 +63,6 @@
 - name: "Ensure authorized_keys are available for user {{ account.name }}"
   authorized_key:
     user: "{{ account.name }}"
-    exclusive: yes
     key: "{{ account.ssh_authorized_keys | join('\n') }}"
     manage_dir: no
   when:
