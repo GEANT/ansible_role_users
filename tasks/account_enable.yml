@@ -83,6 +83,7 @@
     - account.ssh_private_keys is defined
     - account.ssh_private_keys|length > 0
     - current_user.home is defined
+    - item.content|length > 0
 
 - name: "Ensure ssh client config is available for user {{ account.name }}"
   copy:
