@@ -1,2 +1,42 @@
 ---
+# this is for later use
 _packages: []
+
+
+# The upstream module parameters
+# https://docs.ansible.com/ansible/latest/modules/user_module.html
+_ansible_user_module_params:
+  - append
+  - authorization
+  - comment
+  - create_home
+  - expires
+  - force
+  - group
+  - groups
+  - hidden
+  - home
+  - local
+  - login_class
+  - move_home
+  - name
+  - non_uniqe
+  - password
+  - password_lock
+  - profile
+  - remove
+  - role
+  - seuser
+  - shell
+  - skeleton
+  - state
+  - system
+  - uid
+  - update_password
+
+# Our extra/customer parameters
+_our_params:
+  - ssh_authorized_keys
+  - ssh_private_keys
+  - ssh_config
+  - ssh_config_template

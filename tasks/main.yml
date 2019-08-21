@@ -14,8 +14,10 @@
 
 - set_fact:
     user_accounts_delete: "{{ user_accounts | selectattr('state', 'defined') | selectattr('state', 'equalto', 'absent') | list }}"
+  tags: always
 - set_fact:
     user_accounts_enable: "{{ user_accounts | difference(user_accounts_delete) }}"
+  tags: always
 
 - name: Ensure user accounts are available
   include_tasks: account_enable.yml
@@ -28,7 +30,7 @@
     loop_var: account
   tags:
     - accounts
-    
+
 - name: Ensure user accounts are unavailable
   include_tasks: account_disable.yml
   args:

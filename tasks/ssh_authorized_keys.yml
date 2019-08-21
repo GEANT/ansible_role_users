@@ -1,0 +1,8 @@
+---
+- name: "Ensure authorized_keys is available for user {{ account.name }}"
+  authorized_key:
+    user: "{{ account.name }}"
+    key: "{{ account.ssh_authorized_keys | join('\n') }}"
+    manage_dir: no
+  when:
+    - current_user.home is defined

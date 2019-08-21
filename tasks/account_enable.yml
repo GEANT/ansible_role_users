@@ -1,4 +1,11 @@
 ---
+- name: Safety check for user {{ account.name }}
+  assert:
+    that:
+      - "{{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params) | length < 1 }}"
+    fail_msg: "Unsupported parameters: {{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params) | join(', ') }}"
+  ignore_errors: true
+
 # Provisioning tasks
 - name: "Ensure group is available for user {{ account.name }}"
   group:
@@ -47,6 +54,7 @@
     current_primary_group: "{{ getent_group | dictsort | selectattr('1.1', 'equalto', current_user.group|string)|first|first }}"
   when: current_user.group is defined
 
+# FIXME how to make this not skip?
 # SSH related tasks
 - name: "Ensure .ssh directory is available for user {{ account.name }}"
   file:
@@ -60,48 +68,8 @@
     - current_user.home is defined
     - current_primary_group is defined
 
-- name: "Ensure authorized_keys are available for user {{ account.name }}"
-  authorized_key:
-    user: "{{ account.name }}"
-    key: "{{ account.ssh_authorized_keys | join('\n') }}"
-    manage_dir: no
-  when:
-    - account.ssh_authorized_keys is defined
-    - account.ssh_authorized_keys|length > 0
-    - current_user.home is defined
-
-- name: "Ensure private keys are available for user {{ account.name }}"
-  copy:
-    content: "{{ item.content }}"
-    dest: "{{ current_user.home }}/.ssh/{{ item.dest }}"
-    owner: "{{ account.name }}"
-    group: "{{ current_primary_group }}"
-    mode: "{{ current_user.mode | default('0400') }}"
-  no_log: true
-  loop: "{{ account.ssh_private_keys }}"
-  when:
-    - account.ssh_private_keys is defined
-    - account.ssh_private_keys|length > 0
-    - current_user.home is defined
-
-- name: "Ensure ssh client config is available for user {{ account.name }}"
-  copy:
-    content: "{{ account.ssh_config }}"
-    dest: "{{ current_user.home }}/.ssh/config"
-    owner: "{{ account.name }}"
-    group: "{{ current_primary_group }}"
-    mode: '0600'
-  when:
-    - account.ssh_config is defined
-    - current_user.home is defined
-
-- name: "Ensure ssh client config is available for user {{ account.name }} (from template)"
-  template:
-    src: "{{ account.ssh_config_template }}"
-    dest: "{{ current_user.home }}/.ssh/config"
-    owner: "{{ account.name }}"
-    group: "{{ current_primary_group }}"
-    mode: '0600'
-  when:
-    - account.ssh_config_template is defined
-    - current_user.home is defined
+- name: Include tasks for our custom parameters
+  include_tasks: "{{ param }}.yml"
+  with_items: "{{ account.keys() | list | intersect(_our_params) }}"
+  loop_control:
+    loop_var: param
