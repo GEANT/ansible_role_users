@@ -37,6 +37,7 @@ _ansible_user_module_params:
 # Our extra/customer parameters
 _our_params:
   - ssh_authorized_keys
-  - ssh_private_keys
+  - ssh_keypairs
+  - ssh_public_keys
   - ssh_config
   - ssh_config_template
