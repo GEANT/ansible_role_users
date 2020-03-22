@@ -34,9 +34,9 @@ _ansible_user_module_params:
   - uid
   - update_password
 
-# Our extra/customer parameters
+# Our extra/custom parameters
 _our_params:
   - ssh_authorized_keys
-  - ssh_private_keys
   - ssh_config
   - ssh_config_template
+  - ssh_keypairs
