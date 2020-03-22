@@ -74,7 +74,7 @@
     group: "{{ current_primary_group }}"
   when:
     # FIXME this hardcoded list is "_our_params"? use that instead
-    - account.keys() | list | intersect(['ssh_config', 'ssh_config_template', 'ssh_keypairs', 'ssh_authorized_keys']) | length > 0
+    - account.keys() | list | intersect(_our_params) | length > 0
     - current_user.home is defined
     - current_primary_group is defined
 
