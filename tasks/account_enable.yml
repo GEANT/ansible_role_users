@@ -44,7 +44,7 @@
     remove: "{{ account.remove | default(omit) }}"
     role: "{{ account.role | default(omit) }}"
     seuser: "{{ account.seuser | default(omit) }}"
-    shell: "{{ account.shell | default(omit) }}"
+    shell: "{{ account.shell | default(user_account_shell|default(omit)) }}"
     skeleton: "{{ account.skeleton | default(omit) }}"
     state: present
     system: "{{ account.system_user | default(omit) }}"
