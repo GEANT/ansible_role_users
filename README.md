@@ -33,18 +33,19 @@ This examples playbook uses the role twice:
     - role: ansible_role_users
       become: true
       vars:
-        # More elaborate example
+        # Some defaults for all user accounts
+        users_user_ssh_authorized_keys_exclusive: yes
+        users_user_shell: /bin/dash
+        users_user_group: websvc
+        users_user_system_user: yes
+        users_user_system_group: yes
+        # Then the actual users
         user_accounts:
           - name: user4
-            group: websvc
-            shell: /bin/bash
             password: "{{ 'hackme' | password_hash('sha512', 'mysalt') }}"
             comment: System account for the web services
-            system_user: yes
-            system_group: yes
-            home: /opt/user1
+            home: /opt/user4
             ssh_authorized_keys:
-              exclusive: yes
               pubkeys:
                 - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
                 - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
@@ -60,9 +61,14 @@ This examples playbook uses the role twice:
               Host gitlab.uni.edu
               IdentityFile git_deploy_key
               IdentitiesOnly yes
-          - name: hax0r
-            state: absent
-            remove: yes
+          - name: user5
+            password: "{{ 'hackmetoo' | password_hash('sha512', 'mysalt') }}"
+            comment: Another system account for a web service
+            ssh_authorized_keys:
+              pubkeys:
+                - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
+                - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
 ```
 
 

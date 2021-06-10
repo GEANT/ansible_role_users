@@ -4,6 +4,6 @@
     user: "{{ account.name }}"
     key: "{{ account.ssh_authorized_keys.pubkeys | join('\n') }}"
     manage_dir: no
-    exclusive: "{{ account.ssh_authorized_keys.exclusive | default('no') }}"
+    exclusive: "{{ account.ssh_authorized_keys.exclusive | default(users_user_ssh_authorized_keys_exclusive|default(omit)) }}"
   when:
     - current_user.home is defined
