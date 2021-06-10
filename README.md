@@ -33,42 +33,7 @@ This examples playbook uses the role twice:
     - role: ansible_role_users
       become: true
       vars:
-        # More elaborate example
-        user_accounts:
-          - name: user4
-            group: websvc
-            shell: /bin/bash
-            password: "{{ 'hackme' | password_hash('sha512', 'mysalt') }}"
-            comment: System account for the web services
-            system_user: yes
-            system_group: yes
-            home: /opt/user1
-            ssh_authorized_keys:
-              exclusive: yes
-              pubkeys:
-                - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
-                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
-                - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
-            ssh_keypairs:
-              - dest: git_deploy_key
-                private: |
-                  -----BEGIN OPENSSH PRIVATE KEY-----
-                  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9u....
-                  -----END OPENSSH PRIVATE KEY-----
-                public: ssh-rsa AAAAB3NzaC1yc....
-            ssh_config: |
-              Host gitlab.uni.edu
-              IdentityFile git_deploy_key
-              IdentitiesOnly yes
-          - name: hax0r
-            state: absent
-            remove: yes
-    
-
-    - role: ansible_role_users
-      become: true
-      vars:
-        # Some defaults for all users
+        # Some defaults for all user accounts
         users_user_ssh_authorized_keys_exclusive: yes
         users_user_shell: /bin/dash
         users_user_group: websvc
