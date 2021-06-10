@@ -63,6 +63,47 @@ This examples playbook uses the role twice:
           - name: hax0r
             state: absent
             remove: yes
+    
+
+    - role: ansible_role_users
+      become: true
+      vars:
+        # Some defaults for all users
+        users_user_ssh_authorized_keys_exclusive: yes
+        users_user_shell: /bin/dash
+        users_user_group: websvc
+        users_user_system_user: yes
+        users_user_system_group: yes
+        # Then the actual users
+        user_accounts:
+          - name: user4
+            password: "{{ 'hackme' | password_hash('sha512', 'mysalt') }}"
+            comment: System account for the web services
+            home: /opt/user4
+            ssh_authorized_keys:
+              pubkeys:
+                - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
+                - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
+            ssh_keypairs:
+              - dest: git_deploy_key
+                private: |
+                  -----BEGIN OPENSSH PRIVATE KEY-----
+                  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9u....
+                  -----END OPENSSH PRIVATE KEY-----
+                public: ssh-rsa AAAAB3NzaC1yc....
+            ssh_config: |
+              Host gitlab.uni.edu
+              IdentityFile git_deploy_key
+              IdentitiesOnly yes
+          - name: user5
+            password: "{{ 'hackmetoo' | password_hash('sha512', 'mysalt') }}"
+            comment: Another system account for a web service
+            ssh_authorized_keys:
+              pubkeys:
+                - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
+                - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
 ```
 
 
