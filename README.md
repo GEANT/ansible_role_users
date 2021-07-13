@@ -69,6 +69,13 @@ This examples playbook uses the role twice:
                 - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
                 - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
                 - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
+          - name: admin2
+            password: "{{ 'hackme2' | password_hash('sha512', 'mysalt') }}"
+            comment: Extra admin account with passwordless sudo
+            ssh_authorized_keys:
+              pubkeys:
+                - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
+            sudo_config: "ALL=(ALL) NOPASSWD:ALL"
 ```
 
 

@@ -40,3 +40,4 @@ _our_params:
   - ssh_config
   - ssh_config_template
   - ssh_keypairs
+  - sudo_config

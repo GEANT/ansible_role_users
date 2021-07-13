@@ -6,3 +6,8 @@
     remove: "{{ account.remove | default(omit) }}"
     force: "{{ account.force | default(omit) }}"
   when: account.name is defined
+
+- name: "Ensure sudo configuration is removed for user {{ account.name }}"
+  file:
+    path: "/etc/sudoers.d/account_{{ account.name }}"
+    state: absent
