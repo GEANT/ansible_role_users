@@ -12,13 +12,10 @@
     name: "{{ _packages }}"
   tags: packages
 
-- name: Set which users to delete
-  set_fact:
+- set_fact:
     user_accounts_delete: "{{ user_accounts | selectattr('state', 'defined') | selectattr('state', 'equalto', 'absent') | list }}"
   tags: always
-
-- name: Set which users to enable
-  set_fact:
+- set_fact:
     user_accounts_enable: "{{ user_accounts | difference(user_accounts_delete) }}"
   tags: always
 
@@ -31,7 +28,6 @@
   loop: "{{ user_accounts_enable }}"
   loop_control:
     loop_var: account
-    label: "{{ account.name }}"
   tags:
     - accounts
 
@@ -44,6 +40,5 @@
   loop: "{{ user_accounts_delete }}"
   loop_control:
     loop_var: account
-    label: "{{ account.name }}"
   tags:
     - accounts
