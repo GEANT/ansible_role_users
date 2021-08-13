@@ -30,7 +30,7 @@
     expires: "{{ account.expires | default(users_user_expires|default(omit)) }}"
     force: "{{ account.force | default(users_user_force|default(omit)) }}"
     group: "{{ account.group | default(users_user_group|default(omit)) }}"
-    groups: "{{ account.groups | default(users_user_groups|default(omit)) }}"
+    groups: "{{ account.groups | default(users_user__groups|default(omit)) }}"
     hidden: "{{ account.hidden | default(users_user_hidden|default(omit)) }}"
     home: "{{ account.home | default(users_user_home|default(omit)) }}"
     local: "{{ account.local | default(users_user_local|default(omit)) }}"
