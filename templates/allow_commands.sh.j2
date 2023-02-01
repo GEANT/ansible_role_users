@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# You can have only one forced command in ~/.ssh/authorized_keys. Use this
+# wrapper to allow several commands.
+if [ $# -ne ]; then
+  echo "ERROR: this wrapper needs one argument: the hash of the SSH public key"
+  exit 1
+fi
+echo  "`/bin/date`: $SSH_ORIGINAL_COMMAND" >> $HOME/.ssh-command.log
+
+{% for item in account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]') %}
+if [ $1 == "{{ item.pubkey | hash }}" ]; then
+  case "$SSH_ORIGINAL_COMMAND" in
+  {% for command in item.commands %}
+      "{{ command }}")
+      {{ command}}
+      ;;
+  {% endfor %}
+      *)
+          echo "ERROR: not allowed to run '$SSH_ORIGINAL_COMMAND'"
+          exit 1
+          ;;
+  esac
+fi
+{% endfor %}
+
