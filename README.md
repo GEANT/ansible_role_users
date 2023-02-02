@@ -5,6 +5,8 @@ Instead, this role adds support for the following options:
 
 - `ssh_private_keys`. A list of dictionaries containing a `dest` key (filename below `~/.ssh`), and a `content` key (key material).
 - `ssh_authorized_keys`. A list of public keys, these are taken to be 'exclusive'.
+  Normally it is only possible to have one `"command"` option per key. If you configure a pubkey entry as a dict with a `pubkey` and `commands` key (list), then a shell wrapper script will be installed as the command, and that script
+  will allow all the commands. See below for and example.
 - `ssh_config`. An inline snippet of SSH client configuration, saved as `~/.ssh/config`. If you need templating, pick the new option.
 - `ssh_config_template`. Same as the above, but this accepts a file name to a template.
 
@@ -29,7 +31,7 @@ This examples playbook uses the role twice:
           - name: user2
           - name: user3
 
-    
+
     - role: ansible_role_users
       become: true
       vars:
@@ -48,7 +50,7 @@ This examples playbook uses the role twice:
             ssh_authorized_keys:
               pubkeys:
                 - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
-                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
+                - "command=/usr/bin/rsync --foo --bar" ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
                 - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
             ssh_keypairs:
               - dest: git_deploy_key
@@ -68,13 +70,19 @@ This examples playbook uses the role twice:
               pubkeys:
                 - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
                 - ssh-rsa AAAAB3NzaC1yc2EAAAADAQAD....
-                - ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
+                - command="/usr/bin/whoami" ssh-ed25519 AAAAC3NzaC1lZDIDDJ72....
           - name: admin2
             password: "{{ 'hackme2' | password_hash('sha512', 'mysalt') }}"
             comment: Extra admin account with passwordless sudo
             ssh_authorized_keys:
               pubkeys:
                 - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
+                # Allow multiple commands for a single key
+                - pubkey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVQU41erftVORV0eYWfBlRjIqDujxzbRsmZ4G0L0xWY
+                  commands:
+                    - /usr/bin/true
+                    - sudo rsync --server --sender -vlogDtprRe.iLsfxCIvu --files-from=- --from0 . /
+                    - /usr/bin/whoami
             sudo_config: "ALL=(ALL) NOPASSWD:ALL"
 ```
 
