@@ -1,7 +1,7 @@
 ---
 - name: Ensure SSH multi command wrapper script is available
   template:
-    src: allow_commands.sh.j2
+    src: allowed_commands.sh.j2
     dest: "{{ current_user.home }}/.ssh/allowed_commands.sh"
     mode: "0700"
     owner: "{{ account.name }}"
