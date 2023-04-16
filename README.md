@@ -6,9 +6,9 @@ Instead, this role adds support for the following options:
 - `ssh_private_keys`. A list of dictionaries containing a `dest` key (filename below `~/.ssh`), and a `content` key (key material).
 - `ssh_authorized_keys`. A list of public keys, these are taken to be 'exclusive'.
   Normally it is only possible to have one `"command"` option per key. If you configure a pubkey entry as a dict with a `pubkey` and `commands` key (list), then a shell wrapper script will be installed as the command, and that script
-  will allow all the commands. See below for and example.
-- `ssh_config`. An inline snippet of SSH client configuration, saved as `~/.ssh/config`. If you need templating, pick the new option.
-- `ssh_config_template`. Same as the above, but this accepts a file name to a template.
+  in turn will allow all the commands. See below for an example.
+- `ssh_config`. An inline snippet of SSH client configuration, saved as `~/.ssh/config`. If you need templating, pick the next option.
+- `ssh_config_template`. Same as the above, but this accepts a template file name.
 
 
 Example playbook
