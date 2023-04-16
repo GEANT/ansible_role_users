@@ -1,8 +1,23 @@
 ---
-- name: "Ensure authorized_keys is available for user {{ account.name }}"
+- name: Ensure SSH multi command wrapper script is available
+  template:
+    src: allowed_commands.sh.j2
+    dest: "{{ current_user.home }}/.ssh/allowed_commands.sh"
+    mode: "0700"
+    owner: "{{ account.name }}"
+    group: "{{ current_primary_group }}"
+  when: account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]')|count > 0
+
+- name: "Ensure authorized_keys file is available for user {{ account.name }}"
   authorized_key:
     user: "{{ account.name }}"
-    key: "{{ account.ssh_authorized_keys.pubkeys | join('\n') }}"
+    key: |
+      {% for item in account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]') %}
+      command=".ssh/allowed_commands.sh {{ item.pubkey|hash }}" {{ item.pubkey }}
+      {% endfor %}
+      {% for item in account.ssh_authorized_keys.pubkeys|select("string") %}
+      {{ item }}
+      {% endfor %}
     manage_dir: no
     exclusive: "{{ account.ssh_authorized_keys.exclusive | default(users_user_ssh_authorized_keys_exclusive|default(omit)) }}"
   when:

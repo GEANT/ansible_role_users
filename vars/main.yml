@@ -35,6 +35,7 @@ _ansible_user_module_params:
   - update_password
 
 # Our extra/custom parameters
+# Each of these has its own dedicated task file
 _our_params:
   - ssh_authorized_keys
   - ssh_config

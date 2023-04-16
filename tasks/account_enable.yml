@@ -2,7 +2,7 @@
 - name: Check unsupported parameters for user {{ account.name }}
   assert:
     that:
-      - "{{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params) | length < 1 }}"
+      - "{{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params|union(['gid'])) | length < 1 }}"
     fail_msg: "Unsupported parameters: {{ account.keys() |
       list | difference(_ansible_user_module_params) | difference(_our_params) | join(', ') }}."
   ignore_errors: true
@@ -17,9 +17,10 @@
 # Provisioning tasks
 - name: "Ensure group is available for user {{ account.name }}"
   group:
-    name: "{{ account.group }}"
+    name: "{{ account.group | default(account.name) }}"
     system: "{{ account.system_group | default(false) }}"
-  when: account.group is defined
+    gid: "{{ account.gid | default(omit) }}"
+  when: account.group is defined or account.gid is defined
 
 
 - name: "Ensure account is present for user {{ account.name }}"
