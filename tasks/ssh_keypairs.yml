@@ -1,33 +1,33 @@
 ---
 - name: "Ensure private key is available for {{ account.name }}"
   copy:
-    content: "{{ key.private }}"
-    dest: "{{ current_user.home }}/.ssh/{{ key.dest }}"
+    content: "{{ _key.private }}"
+    dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
     mode: "{{ current_user.mode | default('0400') }}"
   no_log: true
   loop: "{{ account.ssh_keypairs }}"
   loop_control:
-    loop_var: key
-    label: "{{ key.dest }}"
+    loop_var: _key
+    label: "{{ _key.dest }}"
   when:
     - current_user.home is defined
-    - key.private is defined
-    - key.private|length > 0
-    
+    - _key.private is defined
+    - _key.private|length > 0
+
 - name: "Ensure public key is available for user {{ account.name }}"
   copy:
-    content: "{{ key.public }}"
-    dest: "{{ current_user.home }}/.ssh/{{ key.dest }}.pub"
+    content: "{{ _key.public }}"
+    dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}.pub"
     owner: "{{ account.name }}"
     group: "{{ current_primary_group }}"
     mode: "{{ current_user.mode | default('0644') }}"
   loop: "{{ account.ssh_keypairs }}"
   loop_control:
-    loop_var: key
-    label: "{{ key.dest }}"
+    loop_var: _key
+    label: "{{ _key.dest }}"
   when:
     - current_user.home is defined
-    - key.public is defined
-    - key.public|length > 0
+    - _key.public is defined
+    - _key.public|length > 0
