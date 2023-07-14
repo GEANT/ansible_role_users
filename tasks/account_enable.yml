@@ -2,7 +2,7 @@
 - name: Check unsupported parameters for user {{ account.name }}
   assert:
     that:
-      - "{{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params|union(['gid'])) | length < 1 }}"
+      - "{{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params|union(['gid','system_group'])) | length < 1 }}"
     fail_msg: "Unsupported parameters: {{ account.keys() |
       list | difference(_ansible_user_module_params) | difference(_our_params) | join(', ') }}."
   ignore_errors: true
