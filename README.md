@@ -84,6 +84,10 @@ This examples playbook uses the role twice:
                     - sudo rsync --server --sender -vlogDtprRe.iLsfxCIvu --files-from=- --from0 . /
                     - /usr/bin/whoami
             sudo_config: "ALL=(ALL) NOPASSWD:ALL"
+          - name: nagios
+            # Useful to pin uid/gid ahead of the software installation
+            uid: 110
+            gid: 118
 ```
 
 
