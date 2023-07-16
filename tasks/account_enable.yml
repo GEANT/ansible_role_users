@@ -18,7 +18,7 @@
 - name: "Ensure group is available for user {{ account.name }}"
   group:
     name: "{{ account.group | default(account.name) }}"
-    system: "{{ account.system_group | default(false) }}"
+    system: "{{ account.system_group | default(omit) }}"
     gid: "{{ account.gid | default(omit) }}"
   when: account.group is defined or account.gid is defined
 
@@ -30,7 +30,7 @@
     create_home: "{{ account.create_home | default(users_user_create_home|default(omit)) }}"
     expires: "{{ account.expires | default(users_user_expires|default(omit)) }}"
     force: "{{ account.force | default(users_user_force|default(omit)) }}"
-    group: "{{ account.group | default(users_user_group|default(omit)) }}"
+    group: "{{ account.group | default(users_user_group|default(account.name|default(omit))) }}"
     groups: "{{ account.groups | default(users_user_groups|default(omit)) }}"
     hidden: "{{ account.hidden | default(users_user_hidden|default(omit)) }}"
     home: "{{ account.home | default(users_user_home|default(omit)) }}"
