@@ -66,8 +66,8 @@
     - current_user.home is defined
 
 
-- name: Include tasks for our custom parameters
+- name: "Include custom parameters tasks for user {{ account.name }}"
   include_tasks: "{{ param }}.yml"
-  with_items: "{{ account.keys() | list | intersect(_our_params) }}"
+  loop: "{{ account.keys() | list | intersect(_our_params) }}"
   loop_control:
     loop_var: param

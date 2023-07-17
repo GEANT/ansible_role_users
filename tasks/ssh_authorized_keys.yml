@@ -1,5 +1,5 @@
 ---
-- name: Ensure SSH multi command wrapper script is available
+- name: "Ensure SSH multi command wrapper script is available for user {{ account.name }}"
   template:
     src: allowed_commands.sh.j2
     dest: "{{ current_user.home }}/.ssh/allowed_commands.sh"
