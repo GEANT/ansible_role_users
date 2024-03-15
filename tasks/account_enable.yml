@@ -2,7 +2,7 @@
 - name: Check unsupported parameters for user {{ account.name }}
   assert:
     that:
-      - "{{ account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params|union(['gid','system_group'])) | length < 1 }}"
+      - account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params|union(['gid','system_group'])) | length < 1
     fail_msg: "Unsupported parameters: {{ account.keys() |
       list | difference(_ansible_user_module_params) | difference(_our_params) | join(', ') }}."
   ignore_errors: true
@@ -10,7 +10,7 @@
 
 - name: Ensure no conflicting parameters for user {{ account.name }}
   assert:
-    that: "{{ account.keys() | list | intersect(['ssh_config', 'ssh_config_template']) | length < 2 }}"
+    that: account.keys() | list | intersect(['ssh_config', 'ssh_config_template']) | length < 2
     fail_msg: "Define either 'ssh_config' or 'ssh_config_template' - not both."
 
 
