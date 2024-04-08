@@ -1,5 +1,5 @@
 ---
-- name: Check unsupported parameters for user {{ account.name }}
+- name: "Check unsupported parameters for user {{ account.name }}"
   ansible.builtin.assert:
     that: account.keys() | list | ansible.builtin.difference(_ansible_user_module_params) |
       ansible.builtin.difference(_our_params|union(['gid','system_group'])) | length < 1
@@ -9,7 +9,7 @@
       ansible.builtin.difference(_our_params) | join(', ') }}."
   ignore_errors: true
 
-- name: Ensure no conflicting parameters for user {{ account.name }}
+- name: "Ensure no conflicting parameters for user {{ account.name }}"
   ansible.builtin.assert:
     that: account.keys() | list | ansible.builtin.intersect(['ssh_config', 'ssh_config_template']) | length < 2
     fail_msg: "Define either 'ssh_config' or 'ssh_config_template' - not both."
@@ -59,7 +59,7 @@
   ansible.builtin.file:
     path: "{{ current_user.home }}/.ssh"
     state: directory
-    mode: '0700'
+    mode: "0700"
     owner: "{{ account.name }}"
     group: "{{ current_user.group }}"
   when:
