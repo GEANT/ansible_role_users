@@ -1,3 +1,6 @@
 ---
 # defaults file for ansible_role_users
 user_accounts: []
+
+user_accounts_delete: "{{ user_accounts | selectattr('state', 'defined') | selectattr('state', 'equalto', 'absent') | list }}"
+user_accounts_enable: "{{ user_accounts | ansible.builtin.difference(user_accounts_delete) }}"

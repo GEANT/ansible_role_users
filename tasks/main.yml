@@ -12,16 +12,6 @@
     name: "{{ _packages }}"
   tags: packages
 
-- name: Set which users to delete
-  ansible.builtin.set_fact:
-    user_accounts_delete: "{{ user_accounts | selectattr('state', 'defined') | selectattr('state', 'equalto', 'absent') | list }}"
-  tags: always
-
-- name: Set which users to enable
-  ansible.builtin.set_fact:
-    user_accounts_enable: "{{ user_accounts | ansible.builtin.difference(user_accounts_delete) }}"
-  tags: always
-
 - name: Ensure user accounts are available
   ansible.builtin.include_tasks: account_enable.yml
   args:
