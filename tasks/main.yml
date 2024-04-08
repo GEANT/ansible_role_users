@@ -1,17 +1,4 @@
 ---
-- name: Load disto specific vars
-  ansible.builtin.include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
-    - "{{ ansible_os_family }}.yml"
-    - main.yml
-  tags: always
-
-- name: Ensure required packages are available
-  ansible.builtin.package:
-    name: "{{ _packages }}"
-  tags: packages
-
 - name: Ensure user accounts are available
   ansible.builtin.include_tasks: account_enable.yml
   args:
