@@ -1,22 +1,23 @@
 ---
 - name: Check unsupported parameters for user {{ account.name }}
-  assert:
-    that:
-      - account.keys() | list | difference(_ansible_user_module_params) | difference(_our_params|union(['gid','system_group'])) | length < 1
-    fail_msg: "Unsupported parameters: {{ account.keys() |
-      list | difference(_ansible_user_module_params) | difference(_our_params) | join(', ') }}."
+  ansible.builtin.assert:
+    that: account.keys() | list | ansible.builtin.difference(_ansible_user_module_params) |
+      ansible.builtin.difference(_our_params|union(['gid','system_group'])) | length < 1
+    fail_msg: >-
+      "Unsupported parameters: {{ account.keys() |
+      list | ansible.builtin.difference(_ansible_user_module_params) |
+      ansible.builtin.difference(_our_params) | join(', ') }}."
   ignore_errors: true
 
-
 - name: Ensure no conflicting parameters for user {{ account.name }}
-  assert:
-    that: account.keys() | list | intersect(['ssh_config', 'ssh_config_template']) | length < 2
+  ansible.builtin.assert:
+    that: account.keys() | list | ansible.builtin.intersect(['ssh_config', 'ssh_config_template']) | length < 2
     fail_msg: "Define either 'ssh_config' or 'ssh_config_template' - not both."
 
 
 # Provisioning tasks
 - name: "Ensure group is available for user {{ account.name }}"
-  group:
+  ansible.builtin.group:
     name: "{{ account.group | default(account.name) }}"
     system: "{{ account.system_group | default(omit) }}"
     gid: "{{ account.gid | default(omit) }}"
@@ -24,7 +25,7 @@
   register: gr
 
 - name: "Ensure account is present for user {{ account.name }}"
-  user:
+  ansible.builtin.user:
     append: "{{ account.append | default(users_user_append|default(omit)) }}"
     comment: "{{ account.comment | default(users_user_comment|default(omit)) }}"
     create_home: "{{ account.create_home | default(users_user_create_home|default(omit)) }}"
@@ -55,19 +56,19 @@
   register: current_user
 
 - name: "Ensure .ssh directory is available for user {{ account.name }}"
-  file:
+  ansible.builtin.file:
     path: "{{ current_user.home }}/.ssh"
     state: directory
     mode: '0700'
     owner: "{{ account.name }}"
     group: "{{ current_user.group }}"
   when:
-    - account.keys() | list | intersect(_our_params) | length > 0
+    - account.keys() | list | ansible.builtin.intersect(_our_params) | length > 0
     - current_user.home is defined
 
 
 - name: "Include custom parameters tasks for user {{ account.name }}"
-  include_tasks: "{{ param }}.yml"
-  loop: "{{ account.keys() | list | intersect(_our_params) }}"
+  ansible.builtin.include_tasks: "{{ param }}.yml"
+  loop: "{{ account.keys() | list | ansible.builtin.intersect(_our_params) }}"
   loop_control:
     loop_var: param
