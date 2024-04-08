@@ -1,11 +1,11 @@
 ---
 - name: "Ensure sudo configuration is available for user {{ account.name }}"
-  copy:
+  ansible.builtin.copy:
     content: "{{ account.name }} {{ account.sudo_config }}"
     dest: "/etc/sudoers.d/account_{{ account.name }}"
     owner: root
     group: root
-    mode: '0440'
+    mode: "0440"
     validate: /usr/sbin/visudo -cf %s
   when:
     - account.sudo_config is defined

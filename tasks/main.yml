@@ -1,29 +1,6 @@
 ---
-- name: Load disto specific vars
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
-    - "{{ ansible_os_family }}.yml"
-    - main.yml
-  tags: always
-
-- name: Ensure required packages are available
-  package:
-    name: "{{ _packages }}"
-  tags: packages
-
-- name: Set which users to delete
-  set_fact:
-    user_accounts_delete: "{{ user_accounts | selectattr('state', 'defined') | selectattr('state', 'equalto', 'absent') | list }}"
-  tags: always
-
-- name: Set which users to enable
-  set_fact:
-    user_accounts_enable: "{{ user_accounts | difference(user_accounts_delete) }}"
-  tags: always
-
 - name: Ensure user accounts are available
-  include_tasks: account_enable.yml
+  ansible.builtin.include_tasks: account_enable.yml
   args:
     apply:
       tags:
@@ -36,7 +13,7 @@
     - accounts
 
 - name: Ensure user accounts are unavailable
-  include_tasks: account_disable.yml
+  ansible.builtin.include_tasks: account_disable.yml
   args:
     apply:
       tags:

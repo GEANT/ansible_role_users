@@ -1,8 +1,4 @@
 ---
-# this is for later use
-_packages: []
-
-
 # The upstream module parameters
 # https://docs.ansible.com/ansible/latest/modules/user_module.html
 _ansible_user_module_params:
