@@ -21,7 +21,18 @@
     system: "{{ account.system_group | default(omit) }}"
     gid: "{{ account.gid | default(omit) }}"
   when: account.group is defined or account.gid is defined
+  changed_when: false
   register: gr
+  async: 60
+  poll: 0
+
+- async_status:
+    jid: "{{ gr.ansible_job_id }}"
+  register: job
+  until: job.finished
+  delay: 0
+  retries: 600
+  when: account.group is defined or account.gid is defined
 
 - name: "Ensure account is present for user {{ account.name }}"
   user:
@@ -53,6 +64,17 @@
     update_password: "{{ account.update_password | default(users_user_update_password|default(omit)) }}"
   when: account.name is defined
   register: current_user
+  async: 60
+  changed_when: false
+  poll: 0
+
+- async_status:
+    jid: "{{ current_user.ansible_job_id }}"
+  register: job
+  until: job.finished
+  delay: 0
+  retries: 600
+  when: account.name is defined
 
 - name: "Ensure .ssh directory is available for user {{ account.name }}"
   file:
