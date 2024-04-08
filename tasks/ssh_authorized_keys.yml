@@ -1,6 +1,6 @@
 ---
 - name: "Ensure SSH multi command wrapper script is available for user {{ account.name }}"
-  template:
+  ansible.builtin.template:
     src: allowed_commands.sh.j2
     dest: "{{ current_user.home }}/.ssh/allowed_commands.sh"
     mode: "0700"
@@ -9,7 +9,7 @@
   when: account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]')|count > 0
 
 - name: "Ensure authorized_keys file is available for user {{ account.name }}"
-  authorized_key:
+  ansible.builtin.authorized_key:
     user: "{{ account.name }}"
     key: |
       {% for item in account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]') %}

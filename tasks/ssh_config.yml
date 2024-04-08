@@ -1,10 +1,10 @@
 ---
 - name: "Ensure ssh client config is available for user {{ account.name }}"
-  copy:
+  ansible.builtin.copy:
     content: "{{ account.ssh_config }}"
     dest: "{{ current_user.home }}/.ssh/config"
     owner: "{{ account.name }}"
     group: "{{ current_user.group }}"
-    mode: '0600'
+    mode: "0600"
   when:
     - current_user.home is defined
