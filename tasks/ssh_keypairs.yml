@@ -1,11 +1,7 @@
 ---
 - name: "Ensure private key is available for {{ account.name }}"
-  ansible.builtin.copy:
-    content: "{{ _key.private }}"
-    dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
-    owner: "{{ account.name }}"
-    group: "{{ current_user.group }}"
-    mode: "{{ current_user.mode | default('0400') }}"
+  ansible.builtin.include_tasks:
+    file: "ssh_keypair_{{ 'present' if _key.state | default('present') == 'present' else 'absent' }}.yml"
   no_log: true
   loop: "{{ account.ssh_keypairs }}"
   loop_control:
@@ -13,21 +9,3 @@
     label: "{{ _key.dest }}"
   when:
     - current_user.home is defined
-    - _key.private is defined
-    - _key.private|length > 0
-
-- name: "Ensure public key is available for user {{ account.name }}"
-  ansible.builtin.copy:
-    content: "{{ _key.public }}"
-    dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}.pub"
-    owner: "{{ account.name }}"
-    group: "{{ current_user.group }}"
-    mode: "{{ current_user.mode | default('0644') }}"
-  loop: "{{ account.ssh_keypairs }}"
-  loop_control:
-    loop_var: _key
-    label: "{{ _key.dest }}"
-  when:
-    - current_user.home is defined
-    - _key.public is defined
-    - _key.public|length > 0
