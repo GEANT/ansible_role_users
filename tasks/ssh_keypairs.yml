@@ -1,11 +1,13 @@
 ---
-- name: "Ensure private key is available for {{ account.name }}"
+- name: "Include key pair logic for {{ account.name }}"
   ansible.builtin.include_tasks:
-    file: "ssh_keypair_{{ 'present' if _key.state | default('present') == 'present' else 'absent' }}.yml"
-  no_log: true
+    file: "ssh_keypair_{{ state }}.yml"
+  # no_log: true
   loop: "{{ account.ssh_keypairs }}"
   loop_control:
     loop_var: _key
     label: "{{ _key.dest }}"
   when:
     - current_user.home is defined
+  vars:
+    state: "{{ 'absent' if _key.state | default('present') == 'absent' else 'present' }}"

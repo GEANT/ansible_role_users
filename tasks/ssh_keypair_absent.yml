@@ -1,0 +1,10 @@
+---
+- name: "Ensure private key {{ _key.dest }} is absent for {{ account.name }}"
+  ansible.builtin.file:
+    path: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
+    state: absent
+
+- name: "Ensure public key {{ _key.dest }}.pub is absent for user {{ account.name }}"
+  ansible.builtin.file:
+    path: "{{ current_user.home }}/.ssh/{{ _key.dest }}.pub"
+    state: absent

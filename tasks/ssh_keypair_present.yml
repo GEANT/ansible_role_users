@@ -1,5 +1,5 @@
 ---
-- name: "Ensure private key is available for {{ account.name }}"
+- name: "Ensure private key {{ _key.dest }} is present for {{ account.name }}"
   ansible.builtin.copy:
     content: "{{ _key.private }}"
     dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
@@ -12,7 +12,7 @@
     - _key.private is defined
     - _key.private | length > 0
 
-- name: "Ensure public key is available for user {{ account.name }}"
+- name: "Ensure public key {{ _key.dest }}.pub is present for user {{ account.name }}"
   ansible.builtin.copy:
     content: "{{ _key.public }}"
     dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}.pub"
