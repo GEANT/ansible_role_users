@@ -35,6 +35,5 @@ _ansible_user_module_params:
 _our_params:
   - ssh_authorized_keys
   - ssh_config
-  - ssh_config_template
   - ssh_keypairs
   - sudo_config

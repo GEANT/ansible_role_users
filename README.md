@@ -1,29 +1,111 @@
-Ansible role to configure multiple users accounts.
+# Ansible role to configure multiple users accounts
 
-This takes into account all the user options that ansible supports, minus the SSH related ones.
-Instead, this role adds support for the following options:
+This takes into account all the options that `ansible.builtin.user` supports,
+but replaces and extends SSH related ones.
 
-- `ssh_private_keys`. A list of dictionaries containing a `dest` key (filename below `~/.ssh`), and a `content` key (key material).
-- `ssh_authorized_keys`. A list of public keys, these are taken to be 'exclusive'.
-  Normally it is only possible to have one `"command"` option per key. If you configure a pubkey entry as a dict with a `pubkey` and `commands` key (list), then a shell wrapper script will be installed as the command, and that script
-  in turn will allow all the commands. See below for an example.
-- `ssh_config`. An inline snippet of SSH client configuration, saved as `~/.ssh/config`. If you need templating, pick the next option.
-- `ssh_config_template`. Same as the above, but this accepts a template file name.
+## SSH related options
 
+### `ssh_authorized_keys`
 
-Example playbook
-----------------
+A list of public keys, these are taken to be 'exclusive'.
+Normally it is only possible to have one `"command"` option per key. If you
+configure a pubkey entry as a dict with a `pubkey` and `commands` key (list),
+then a shell wrapper script will be installed as the command, and that script
+in turn will allow all the commands. See below for an example
 
-This examples playbook uses the role twice:
+### `ssh_config`
 
+An inline snippet of SSH client configuration, saved as `~/.ssh/config`. If you
+need templating, see below
+
+### `ssh_config_template`
+
+Not supported anymore. Use `ssh_config` and do a template lookup. For example,
+instead of this:
+
+```yaml
+ssh_config_template: custom_ssh_config.j2
+```
+
+Use this:
+
+```yaml
+ssh_config: "{{ lookup('ansible.builtin.template', 'custom_ssh_config.j2') }}"
+```
+
+### `ssh_keypairs`
+
+A list of dictionaries that represent SSH keypairs. Each keypair should at
+least have a `dest` and `private` key:
+
+```yaml
+- dest: id_ed25519
+  private: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAE...
+    ....
+    -----END OPENSSH PRIVATE KEY-----
+```
+
+The above example will write the private key to a file `~/.ssh/id_ed25519`, and
+it will extract the public key from the private key and write that to
+`~/.ssh/id_ed25519.pub`.
+
+You can optionally configure the public key explicitly:
+
+```yaml
+- dest: id_ed25519
+  private: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAE...
+    ....
+    -----END OPENSSH PRIVATE KEY-----
+  public: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJQiAuSXCK+Vhnzsbgj4sBOyoZ5nB0d+8b7Vocs+gU2p with some comments
+```
+
+If you do not want a public key at all (not very useful because the public key
+is contained in the private key anyway), then set `public` to `false`:
+
+```yaml
+- dest: id_ed25519
+  private: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAE...
+    ....
+    -----END OPENSSH PRIVATE KEY-----
+  public: false
+```
+
+It is also possible to supply a `present` key (boolean), which can be useful to
+make sure the keypair (both private and public parts) is removed when set to
+`false`:
+
+```yaml
+- dest: id_ed25519
+  private: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAE...
+    ....
+    -----END OPENSSH PRIVATE KEY-----
+  present: false
+```
+
+### `sudo_config`
+
+Optional snippet of sudo config, which is templated to
+`/etc/sudoers.d/account_{{ name }}`. FIXME: handle cleanup better
+
+## Examples
+
+This playbook uses the role twice:
 
 ```yaml
 ---
 - hosts: servers
+  become: true
 
   roles:
     - role: ansible_role_users
-      become: true
       vars:
         # Very minimal example
         user_accounts:
@@ -33,7 +115,6 @@ This examples playbook uses the role twice:
 
 
     - role: ansible_role_users
-      become: true
       vars:
         # Some defaults for all user accounts
         users_user_ssh_authorized_keys_exclusive: yes
@@ -58,7 +139,6 @@ This examples playbook uses the role twice:
                   -----BEGIN OPENSSH PRIVATE KEY-----
                   b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9u....
                   -----END OPENSSH PRIVATE KEY-----
-                public: ssh-rsa AAAAB3NzaC1yc....
             ssh_config: |
               Host gitlab.uni.edu
               IdentityFile git_deploy_key
@@ -88,40 +168,26 @@ This examples playbook uses the role twice:
             # Useful to pin uid/gid ahead of the software installation
             uid: 110
             gid: 118
+            ssh_keypairs:
+              - dest: github_cloning_key
+                private: |
+                  -----BEGIN OPENSSH PRIVATE KEY-----
+                  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQ....
+                  -----END OPENSSH PRIVATE KEY-----
+                # Only deploy keypair if a condition is true
+                present: "{{ (github_checks_repos | length > 0) }}"
 ```
 
+## Requirements
 
+- Ansible galaxy collections:
+    - `community.crypto`
+    - `ansible.posix`
 
-
-
-Optinally you can also configure the currently used account, by setting `name` to `ansible_user`:
-
-```yaml
-- hosts: servers
-
-  roles:
-    - role: ansible_role_users
-      become: true
-      vars:
-        user_accounts:
-          - name: "{{ ansible_user }}"
-            ssh_authorized_keys:
-              - ssh-ed25519 AAAAC3NzaC1lZDI1iweE....
-```
-
-Notes
-----
-
-- On a MacOS control machine you need to `pip install password_hash` for the password hashing to work.
-- Use only one of `ssh_config` and `ssh_config_template`, as they both write to the same file.
-
-
-License
--------
+## License
 
 BSD
 
-Author Information
-------------------
+## Author Information
 
 Dick Visser <dick.visser@geant.org>

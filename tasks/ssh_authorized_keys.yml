@@ -6,19 +6,19 @@
     mode: "0700"
     owner: "{{ account.name }}"
     group: "{{ current_user.group }}"
-  when: account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]')|count > 0
+  when: account.ssh_authorized_keys.pubkeys | json_query('[?commands && pubkey]') | count > 0
 
 - name: "Ensure authorized_keys file is available for user {{ account.name }}"
-  ansible.builtin.authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ account.name }}"
     key: |
-      {% for item in account.ssh_authorized_keys.pubkeys|json_query('[?commands && pubkey]') %}
-      command=".ssh/allowed_commands.sh {{ item.pubkey|hash }}" {{ item.pubkey }}
+      {% for item in account.ssh_authorized_keys.pubkeys | json_query('[?commands && pubkey]') %}
+      command=".ssh/allowed_commands.sh {{ item.pubkey | hash }}" {{ item.pubkey }}
       {% endfor %}
-      {% for item in account.ssh_authorized_keys.pubkeys|select("string") %}
+      {% for item in account.ssh_authorized_keys.pubkeys | select("string") %}
       {{ item }}
       {% endfor %}
-    manage_dir: no
-    exclusive: "{{ account.ssh_authorized_keys.exclusive | default(users_user_ssh_authorized_keys_exclusive|default(omit)) }}"
+    manage_dir: false
+    exclusive: "{{ account.ssh_authorized_keys.exclusive | default(users_user_ssh_authorized_keys_exclusive | default(omit)) }}"
   when:
     - current_user.home is defined

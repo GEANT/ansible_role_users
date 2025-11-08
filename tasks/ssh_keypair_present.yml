@@ -1,0 +1,28 @@
+---
+- name: "Ensure private key {{ _key.dest }} is present for {{ account.name }}"
+  ansible.builtin.copy:
+    content: "{{ _key.private }}"
+    dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
+    owner: "{{ account.name }}"
+    group: "{{ current_user.group }}"
+    mode: "{{ current_user.mode | default('0400') }}"
+  no_log: true
+  when:
+    - _key.private is defined
+    - _key.private | length > 0
+
+# For the public key we can do 3 things:
+# 1. Extract it from the private key (default, i.e. without a 'public' dictionary key)
+# 2. Explicitly configure it when a 'public' dictionary key is set to a string
+# 3. Do not write a public key, and remove an existing one (when a 'public' dictionary
+#    key is set to false). This is not particularly useful.
+- name: Include public key logic based on an optional public part of the key
+  ansible.builtin.include_tasks:
+    file: "ssh_keypair_pubkey_{{ task }}.yml"
+  when:
+    - _key.private is defined
+    - _key.private | length > 0
+  vars:
+    task: "{{ 'extract' if _key.public is not defined
+      else 'absent' if not _key.public
+      else 'explicit' }}"

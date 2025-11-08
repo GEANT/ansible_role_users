@@ -1,6 +1,6 @@
 ---
 - name: "Ensure account is absent for user {{ account.name }}"
-  user:
+  ansible.builtin.user:
     name: "{{ account.name }}"
     state: absent
     remove: "{{ account.remove | default(omit) }}"
@@ -8,6 +8,6 @@
   when: account.name is defined
 
 - name: "Ensure sudo configuration is removed for user {{ account.name }}"
-  file:
+  ansible.builtin.file:
     path: "/etc/sudoers.d/account_{{ account.name }}"
     state: absent

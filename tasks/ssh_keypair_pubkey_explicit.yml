@@ -1,0 +1,12 @@
+---
+- name: "Ensure public key {{ _key.dest }}.pub is present for user {{ account.name }}"
+  ansible.builtin.copy:
+    content: "{{ _key.public }}"
+    dest: "{{ current_user.home }}/.ssh/{{ _key.dest }}.pub"
+    owner: "{{ account.name }}"
+    group: "{{ current_user.group }}"
+    # To align with the mode from the 'extracted' task file
+    mode: "{{ current_user.mode | default('0400') }}"
+  when:
+    - _key.public is defined
+    - _key.public | length > 0
