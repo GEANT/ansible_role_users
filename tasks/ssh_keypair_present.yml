@@ -8,7 +8,6 @@
     mode: "{{ current_user.mode | default('0400') }}"
   no_log: true
   when:
-    - current_user.home is defined
     - _key.private is defined
     - _key.private | length > 0
 
@@ -20,6 +19,5 @@
     group: "{{ current_user.group }}"
     mode: "{{ current_user.mode | default('0644') }}"
   when:
-    - current_user.home is defined
     - _key.public is defined
     - _key.public | length > 0
