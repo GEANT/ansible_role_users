@@ -20,7 +20,18 @@ need templating, see below
 
 ### `ssh_config_template`
 
-Same as the above, but this accepts a template file name
+Not supported anymore. Use `ssh_config` and do a template lookup. For example,
+instead of this:
+
+```yaml
+ssh_config_template: custom_ssh_config.j2
+```
+
+Use this:
+
+```yaml
+ssh_config: "{{ lookup('ansible.builtin.template', 'custom_ssh_config.j2') }}"
+```
 
 ### `ssh_keypairs`
 
@@ -169,7 +180,12 @@ This playbook uses the role twice:
 
 ## Requirements
 
-- On a macOS control machine you need to `pip install password_hash` for the password hashing to work.
+- Ansible galaxy collections:
+    - `community.crypto`
+    - `ansible.posix`
+
+## Issues
+ 
 - Use only one of `ssh_config` and `ssh_config_template`, as they both write to the same file.
 
 ## License
