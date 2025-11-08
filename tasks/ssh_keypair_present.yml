@@ -11,7 +11,7 @@
     - _key.private is defined
     - _key.private | length > 0
 
-# For the public key we can to 3 things:
+# For the public key we can do 3 things:
 # 1. Extract it from the private key (default, i.e. without a 'public' dictionary key)
 # 2. Explicitly configure it when a 'public' dictionary key is set to a string
 # 3. Do not write a public key, and remove an existing one (when a 'public' dictionary
