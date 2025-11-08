@@ -26,4 +26,3 @@
     task: "{{ 'extract' if _key.public is not defined
       else 'absent' if not _key.public
       else 'explicit' }}"
-
