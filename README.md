@@ -184,10 +184,6 @@ This playbook uses the role twice:
     - `community.crypto`
     - `ansible.posix`
 
-## Issues
- 
-- Use only one of `ssh_config` and `ssh_config_template`, as they both write to the same file.
-
 ## License
 
 BSD
