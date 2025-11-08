@@ -2,7 +2,7 @@
 - name: "Include key pair logic for user {{ account.name }}"
   ansible.builtin.include_tasks:
     file: "ssh_keypair_{{ state }}.yml"
-  # no_log: true
+  no_log: true
   loop: "{{ account.ssh_keypairs }}"
   loop_control:
     loop_var: _key

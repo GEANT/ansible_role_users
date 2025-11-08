@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
     state: absent
+  no_log: true
 
 - name: "Ensure public key {{ _key.dest }}.pub is absent for user {{ account.name }}"
   ansible.builtin.file:
