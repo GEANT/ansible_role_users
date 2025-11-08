@@ -2,38 +2,28 @@
 dependencies: []
 galaxy_info:
   role_name: ansible_role_users
+  namespace: geant
   description: Configure multiple users accounts, including ssh_config, SSH keys (public/private), multiple allowed commands in authorized_keys
   author: Dick Visser
   company: GÉANT
   license: MIT
-  min_ansible_version: 2.4
+  min_ansible_version: "9"
   platforms:
     - name: EL
       versions:
-        - 7
-        - 8
-        - 9
+        - all
     - name: Fedora
       versions:
         - all
     - name: Debian
       versions:
-        - wheezy
-        - jessie
-        - stretch
-        - buster
-        - bullseye
+        - all
     - name: Ubuntu
       versions:
-        - precise
-        - trusty
-        - xenial
-        - bionic
-        - focal
-        - jammy
+        - all
     - name: FreeBSD
       versions:
-        - 10.2
+        - all
   galaxy_tags:
     - system
     - users

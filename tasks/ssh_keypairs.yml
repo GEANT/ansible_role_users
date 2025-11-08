@@ -1,7 +1,7 @@
 ---
 - name: "Include key pair logic for user {{ account.name }}"
   ansible.builtin.include_tasks:
-    file: "ssh_keypair_{{ state }}.yml"
+    file: "ssh_keypair_{{ 'present' if _key.present | default(true) | bool else 'absent' }}.yml"
   no_log: true
   loop: "{{ account.ssh_keypairs }}"
   loop_control:
@@ -9,5 +9,3 @@
     label: "{{ _key.dest }}"
   when:
     - current_user.home is defined
-  vars:
-    state: "{{ 'absent' if _key.state | default('present') == 'absent' else 'present' }}"

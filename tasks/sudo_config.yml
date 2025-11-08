@@ -9,3 +9,5 @@
     validate: /usr/sbin/visudo -cf %s
   when:
     - account.sudo_config is defined
+
+# FIXME handle case when sudo config is not defined? do we remove the config?

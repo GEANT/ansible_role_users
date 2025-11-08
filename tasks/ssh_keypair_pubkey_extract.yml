@@ -1,0 +1,9 @@
+---
+- name: "Ensure public key {{ _key.dest }}.pub is present for user {{ account.name }}"
+  community.crypto.openssh_keypair:
+    path: "{{ current_user.home }}/.ssh/{{ _key.dest }}"
+    regenerate: never
+    owner: "{{ account.name }}"
+    group: "{{ current_user.group }}"
+    # NOTE this sets both the private and public key permissions
+    mode: "{{ current_user.mode | default('0400') }}"
